@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Kajuuu ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 50%, #660000 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Page transitions */
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .page.fade-out {
+            opacity: 0;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #ffcccc;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .message {
+            color: #ffb3b3;
+            font-size: 1.8rem;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            animation: fadeIn 1.5s ease-in;
+        }
+
+        .floating-items {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 80px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .item-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .item-container:hover {
+            transform: scale(1.05);
+        }
+
+        .teddy-container {
+            font-size: 180px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 15px 30px rgba(255, 180, 120, 0.4));
+            transition: font-size 0.3s ease;
+        }
+
+        .teddy-container.shrink-1 {
+            font-size: 150px;
+        }
+
+        .teddy-container.shrink-2 {
+            font-size: 120px;
+        }
+
+        .teddy-container.shrink-3 {
+            font-size: 90px;
+        }
+
+        .photo-frame {
+            position: relative;
+            animation: float 3s ease-in-out infinite 0.5s;
+            filter: drop-shadow(0 15px 30px rgba(255, 100, 100, 0.5));
+            transition: transform 0.8s ease-out;
+        }
+
+        .photo-frame img {
+            width: 200px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 6px solid #ffb3b3;
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .photo-frame::before {
+            content: "💕";
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            font-size: 40px;
+            animation: heartPulse 1.5s ease-in-out infinite;
+        }
+
+        .photo-frame.expand {
+            transform: scale(3);
+            opacity: 0;
+        }
+
+        .instruction {
+            color: #ffcccc;
+            font-size: 1.4rem;
+            margin-top: 40px;
+            opacity: 0.9;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .teddy-prompt {
+            color: #ffb3b3;
+            font-size: 1.6rem;
+            margin-top: 20px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .teddy-prompt.show {
+            opacity: 1;
+            animation: bounce 0.5s ease;
+        }
+
+        /* Modal for explicit prompt */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(255, 0, 0, 0.6);
+            animation: modalPop 0.4s ease-out;
+        }
+
+        .modal-content h3 {
+            color: #cc0000;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .modal-content p {
+            color: #660000;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #cc0000 0%, #ff0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.6);
+        }
+
+        @keyframes modalPop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffb3b3;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: fadeIn 2s ease-in;
+        }
+
+        /* Floating hearts */
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: rise 4s linear infinite;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* Heart-shaped message box */
+        .teddy-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw;
+            max-width: 450px;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .heart-container {
+            position: relative;
+            width: 100%;
+            padding: 80px 40px 40px 40px;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 50%, #ffb3b3 100%);
+            border-radius: 0 0 200px 200px;
+            box-shadow: 0 20px 60px rgba(255, 0, 0, 0.5);
+            animation: heartBeat 0.8s ease-out;
+        }
+        
+        .heart-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 50%, #ffb3b3 100%);
+            border-radius: 100px 100px 0 0;
+        }
+        
+        .heart-container::after {
+            content: "";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ff6b6b 0%, #ff1493 100%);
+            border-radius: 50%;
+            box-shadow: 0 5px 20px rgba(255, 20, 147, 0.6);
+        }
+
+        .teddy-message.show {
+            display: block;
+        }
+
+        .teddy-message h2 {
+            color: #cc0000;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+        }
+
+        .teddy-message p {
+            color: #660000;
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #cc0000 0%, #ff0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Final page */
+        .final-container {
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .final-message {
+            background: rgba(255, 230, 230, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 550px;
+            margin: 0 auto 30px;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .final-message p {
+            color: #660000;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+
+        .final-emoji {
+            font-size: 100px;
+            margin-bottom: 30px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .petal {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .teddy-scatter {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            pointer-events: none;
+            animation: teddyScatter 1.5s ease-out forwards;
+        }
+
+        @keyframes teddyScatter {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(var(--rotate)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.9;
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes heartPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes rise {
+            0% {
+                bottom: -50px;
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            100% {
+                bottom: 110vh;
+                opacity: 0;
+            }
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes petalFly {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(var(--rotate)) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .message {
+                font-size: 1.3rem;
+            }
+            .teddy-container {
+                font-size: 140px;
+            }
+            .teddy-container.shrink-1 {
+                font-size: 120px;
+            }
+            .teddy-container.shrink-2 {
+                font-size: 100px;
+            }
+            .teddy-container.shrink-3 {
+                font-size: 80px;
+            }
+            .photo-frame img {
+                width: 160px;
+                height: 220px;
+            }
+            .floating-items {
+                gap: 50px;
+            }
+            .teddy-message {
+                max-width: 350px;
+            }
+            .heart-container {
+                padding: 70px 30px 35px 30px;
+            }
+            .teddy-message h2 {
+                font-size: 1.7rem;
+                margin-bottom: 20px;
+            }
+            .teddy-message p {
+                font-size: 1rem;
+                line-height: 1.7;
+                margin-bottom: 18px;
+            }
+            .action-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            .final-message {
+                padding: 30px;
+                margin: 0 20px 25px;
+            }
+            .final-message p {
+                font-size: 1.2rem;
+            }
+            .modal-content {
+                padding: 30px;
+            }
+            .modal-content h3 {
+                font-size: 1.7rem;
+            }
+            .modal-content p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            .message {
+                font-size: 1.1rem;
+            }
+            .teddy-container {
+                font-size: 120px;
+            }
+            .teddy-container.shrink-1 {
+                font-size: 100px;
+            }
+            .teddy-container.shrink-2 {
+                font-size: 80px;
+            }
+            .teddy-container.shrink-3 {
+                font-size: 60px;
+            }
+            .photo-frame img {
+                width: 140px;
+                height: 190px;
+            }
+            .floating-items {
+                gap: 40px;
+            }
+            .teddy-message {
+                max-width: 320px;
+            }
+            .heart-container {
+                padding: 60px 25px 30px 25px;
+            }
+            .teddy-message h2 {
+                font-size: 1.5rem;
+            }
+            .teddy-message p {
+                font-size: 0.95rem;
+            }
+            .heart-container::before {
+                height: 80px;
+            }
+            .heart-container::after {
+                width: 50px;
+                height: 50px;
+                top: -25px;
+            }
+            .footer p {
+                font-size: 0.9rem;
+            }
+            .final-message p {
+                font-size: 1.1rem;
+            }
+            .modal-content {
+                padding: 25px;
+            }
+            .modal-content h3 {
+                font-size: 1.5rem;
+            }
+            .modal-content p {
+                font-size: 1rem;
+            }
+            .modal-btn {
+                padding: 12px 40px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Initial page with teddy and photo -->
+    <div class="page active" id="page1">
+        <div class="container">
+            <h1>Hey Kajuuu ✨</h1>
+            <p class="message">Happy Teddy Day, my love! 🧸💕</p>
+            
+            <div class="floating-items">
+                <div class="item-container teddy-container" onclick="clickTeddy()" id="teddyBear">
+                    🧸
+                </div>
+                
+                <div class="item-container photo-frame" onclick="expandPhoto()" id="photoFrame">
+                    <img src="me.jpeg" alt="Tarang's Photo">
+                </div>
+            </div>
+            
+            <p class="instruction">Click on a teddy.. Hint: Choose wisely 😉</p>
+        </div>
+
+        <div class="footer">
+            <p>By one and only, and yours and only yours, Tarang 😎✨</p>
+        </div>
+    </div>
+
+    <!-- Page 2: Teddy Day Greetings -->
+    <div class="page" id="page2">
+        <div class="teddy-message show">
+            <div class="heart-container">
+                <h2>Happy Teddy Day! 🧸💕</h2>
+                <p>You call me your teddy, and I'm so grateful to be your source of comfort and warmth!</p>
+                <p>Just like a teddy bear, I promise to always be there for you - to hold you tight, make you smile, and keep you cozy in my love! 🤗✨</p>
+                <p>Forever your cuddle buddy! 💖</p>
+                <button class="action-btn" onclick="showFinal()">Cheers! 🥂✨</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Final Message -->
+    <div class="page" id="page3">
+        <div class="final-container">
+            <img src="couple.jpeg" alt="Us" style="max-width: 400px; max-height: 50vh; width: auto; height: auto; border-radius: 20px; box-shadow: 0 20px 60px rgba(255, 0, 0, 0.4); margin-bottom: 30px; border: 4px solid #ffb3b3;">
+            
+            <div class="final-message">
+                <p>You call me teddy, I had to make my day (Teddy day) special, na?! 😄💕</p>
+            </div>
+            
+            <button class="action-btn" onclick="backToStart()">Bye Bye! 👋</button>
+        </div>
+    </div>
+
+    <!-- Modal for teddy click prompt -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <h3>Hey! 🧸</h3>
+            <p>Click on a REAL teddy! 👉💕</p>
+            <button class="modal-btn" onclick="closeModal()">Okay!</button>
+        </div>
+    </div>
+
+    <script>
+        let teddyClickCount = 0;
+
+        // Create floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            heart.style.animationDelay = Math.random() * 1 + 's';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+
+        // Generate hearts frequently
+        setInterval(createHeart, 300);
+
+        // Click teddy bear
+        function clickTeddy() {
+            const teddy = document.getElementById('teddyBear');
+            const modal = document.getElementById('modalOverlay');
+            
+            teddyClickCount++;
+            
+            // Remove previous shrink classes
+            teddy.classList.remove('shrink-1', 'shrink-2', 'shrink-3');
+            
+            // Add appropriate shrink class based on click count
+            if (teddyClickCount === 1) {
+                teddy.classList.add('shrink-1');
+            } else if (teddyClickCount === 2) {
+                teddy.classList.add('shrink-2');
+            } else if (teddyClickCount === 3) {
+                teddy.classList.add('shrink-3');
+                // Show modal after 3rd click
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 300);
+            } else if (teddyClickCount > 3) {
+                // Show modal again if they keep clicking
+                modal.classList.add('show');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.classList.remove('show');
+        }
+
+        // Expand photo and go to page 2
+        function expandPhoto() {
+            const photo = document.getElementById('photoFrame');
+            const page1 = document.getElementById('page1');
+            
+            photo.classList.add('expand');
+            
+            // Create flying teddies
+            createFlyingHearts();
+            
+            // Add fade-out to page 1
+            setTimeout(() => {
+                page1.classList.add('fade-out');
+            }, 500);
+            
+            // Transition to page 2
+            setTimeout(() => {
+                page1.classList.remove('active', 'fade-out');
+                document.getElementById('page2').classList.add('active');
+            }, 1500);
+        }
+
+        // Create flying hearts effect with teddies
+        function createFlyingHearts() {
+            const photoFrame = document.getElementById('photoFrame');
+            const teddyEmojis = ['🧸', '🧸', '🧸', '❤️', '💕', '💖'];
+            
+            // Create more teddies for a bigger scatter effect
+            for (let i = 0; i < 30; i++) {
+                const teddy = document.createElement('div');
+                teddy.className = 'teddy-scatter';
+                teddy.innerHTML = teddyEmojis[Math.floor(Math.random() * teddyEmojis.length)];
+                
+                const angle = (Math.PI * 2 * i) / 30;
+                const distance = 300 + Math.random() * 250;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                const rotate = Math.random() * 1440 - 720;
+                
+                teddy.style.setProperty('--tx', tx + 'px');
+                teddy.style.setProperty('--ty', ty + 'px');
+                teddy.style.setProperty('--rotate', rotate + 'deg');
+                
+                // Position at the center of the photo
+                const rect = photoFrame.getBoundingClientRect();
+                teddy.style.left = (rect.left + rect.width / 2) + 'px';
+                teddy.style.top = (rect.top + rect.height / 2) + 'px';
+                
+                document.body.appendChild(teddy);
+                
+                setTimeout(() => {
+                    teddy.remove();
+                }, 1600);
+            }
+        }
+
+        // Show final page
+        function showFinal() {
+            document.getElementById('page2').classList.remove('active');
+            document.getElementById('page3').classList.add('active');
+        }
+
+        // Back to start
+        function backToStart() {
+            document.getElementById('page3').classList.remove('active');
+            document.getElementById('page1').classList.add('active');
+            
+            // Reset photo and teddy
+            const photo = document.getElementById('photoFrame');
+            const teddy = document.getElementById('teddyBear');
+            photo.classList.remove('expand');
+            teddy.classList.remove('shrink-1', 'shrink-2', 'shrink-3');
+            teddyClickCount = 0;
+        }
+    </script>
+</body>
+</html>
